@@ -1,0 +1,251 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        function makeSpeedAvg(pitcherInfo, isHome, cb) {
+            let colortable = {
+                FF: { color: 'green' },
+                FC: { color: 'lightgreen' },
+                CH: { color: 'skyblue' },
+                SI: { color: 'pink' },
+                SL: { color: 'magenta' },
+                KC: { color: 'brown' },
+                CU: { color: 'red' }
+            };
+            google.charts.load("current", { packages: ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            let avgSpeed = pitcherInfo["AvgSpeed"];
+            // ["Copper", 8.94, "#b87333"],
+            function drawChart() {
+                let width = 600;
+                let height = 400;
+                var data = google.visualization.arrayToDataTable([
+                    ["Element", "Density", { role: "style" }],
+                    ...Object.keys(avgSpeed).map(key => [key, avgSpeed[key], colortable[key]["color"]])
+                ]);
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                    {
+                        calc: "stringify",
+                        sourceColumn: 1,
+                        type: "string",
+                        role: "annotation"
+                    },
+                    2]);
+
+                var options = {
+                    title: pitcherInfo["PitcherId"],
+                    width,
+                    height,
+                    bar: { groupWidth: "95%" },
+                    legend: { position: "none" },
+                };
+
+                let parent = document.querySelector(isHome ? '#homeAvgSpeed':'#awayAvgSpeed');
+                // let parent = document.querySelector('#homeAvgSpeed');
+
+                let pc = document.createElement('div');
+                pc.style = `width: ${width}px; height: ${height}px; border:0px solid red; display: inline-block`;
+                parent.appendChild(pc);
+                // var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+                var chart = new google.visualization.ColumnChart(pc);
+                chart.draw(view, options);
+                cb();
+
+            }
+        }
+        function makeSpinAvg(pitcherInfo, isHome, cb) {
+            let colortable = {
+                FF: { color: 'green' },
+                FC: { color: 'lightgreen' },
+                CH: { color: 'skyblue' },
+                SI: { color: 'pink' },
+                SL: { color: 'magenta' },
+                KC: { color: 'brown' },
+                CU: { color: 'red' }
+            };
+            google.charts.load("current", { packages: ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            let avgSpeed = pitcherInfo["AvgSpin"];
+            // ["Copper", 8.94, "#b87333"],
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+                    ["Element", "Density", { role: "style" }],
+                    ...Object.keys(avgSpeed).map(key => [key, avgSpeed[key], colortable[key]["color"]])
+                ]);
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0, 1,
+                    {
+                        calc: "stringify",
+                        sourceColumn: 1,
+                        type: "string",
+                        role: "annotation"
+                    },
+                    2]);
+
+                var options = {
+                    title: pitcherInfo["PitcherId"],
+                    width: 600,
+                    height: 400,
+                    bar: { groupWidth: "95%" },
+                    legend: { position: "none" },
+                };
+
+                // let parent = document.querySelector(isHome ? '#homeAvgSpeed':'#awayAvgSpeed');
+                let parent = document.querySelector('#homeAvgSpin');
+
+                let pc = document.createElement('div');
+                pc.style = `width: ${600}px; height: ${400}px; border:0px solid red; display: inline-block`;
+                parent.appendChild(pc);
+                // var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+                var chart = new google.visualization.ColumnChart(pc);
+                chart.draw(view, options);
+                cb();
+
+            }
+        }
+        function makePie(pitcherInfo, isHome, cb) {
+            let colortable = {
+                FF: { color: 'green' },
+                FC: { color: 'lightgreen' },
+                CH: { color: 'skyblue' },
+                SI: { color: 'pink' },
+                SL: { color: 'magenta' },
+                KC: { color: 'brown' },
+                CU: { color: 'red' }
+            };
+            let pitchTypeRate = pitcherInfo["PitchTypeRate"]
+            let pitcherId = pitcherInfo["PitcherId"]
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+            let size = 250;
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable([
+                    ['Task', 'Hours per Day'],
+                    ...Object.keys(pitchTypeRate).map(key => [key, pitchTypeRate[key]])
+                ]);
+                var options = {
+                    title: "pitcher ID : " + pitcherId,
+                    slices: Object.keys(pitchTypeRate).map(name => colortable[name]),
+                    'width': size,
+                    'height': size,
+                    'chartArea': { 'width': '70%', 'height': '70%' }, // left:0,top:0,
+                    'legend': { 'position': 'bottom' }
+                };
+
+                let parent = document.querySelector(isHome ? '#homePitchType' : '#awayPitchType');
+                let pc = document.createElement('div');
+                pc.style = `width: ${size}px; height: ${size}px; border:0px solid red; display: inline-block`;
+                parent.appendChild(pc);
+                var chart = new google.visualization.PieChart(pc);
+                chart.draw(data, options);
+                cb();
+            }
+        }
+
+        function makeScatterCharts(pitcherInfo, isHome) {
+            let colortable = {
+                FF: { color: 'green' },
+                FC: { color: 'lightgreen' },
+                CH: { color: 'skyblue' },
+                SI: { color: 'pink' },
+                SL: { color: 'magenta' },
+                KC: { color: 'brown' },
+                CU: { color: 'red' }
+            };
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            let trajectory = pitcherInfo["TrajectoryBreak"];
+            let width  = 600; 
+            let height = 400;
+            function drawChart() {
+                let data_ = [
+                    ['x', 'blue', 'red', 'yellow', 'green', 'bora', 'sky'],
+                    
+                    [1, null, 1, 1, 1, 1, 1],
+                    [1, 5, 1, 1, 1, 1, null],
+                    [1, 5, null, null, null, null, null],
+                ];
+                let hori = [];
+                let veti = [];
+                if (true) {
+                    // data.map(a=>a.PitchType)
+                    let od=[...new Set(trajectory.map(a=>a.PitchType))];
+                    let list = trajectory.map(data => {
+                        let slist = od.map(key => data.PitchType !== key ? null : Number(data.TrajectoryVerticalBreakInduced));;
+                        hori.push(Number(data.TrajectoryHorizontalBreak));
+                        veti.push(Number(data.TrajectoryVerticalBreakInduced));
+                        return [Number(data.TrajectoryHorizontalBreak), ...slist].map(a=>a?a:null);
+                    });
+                    data_ = [
+                        ['x', ...od],
+                        ...list
+                    ];
+                    // console.log((data_));
+                }
+                
+                var data = google.visualization.arrayToDataTable(data_);
+
+                var options = {
+                    title: `pitcher Id : ${pitcherInfo["PitcherId"]}`,
+                    hAxis: { title: 'TrajectoryHorizontalBreak', minValue: Math.min(...hori), maxValue: Math.max(...hori) },
+                    vAxis: { title: 'TrajectoryVerticalBreakInduced',minValue: Math.min(...veti), maxValue: Math.max(...veti)},
+                    legend: ''
+                };
+                // let parent = document.querySelector('#trajectory1');
+                let parent = document.querySelector(isHome ? '#awayTrajectory1' : '#homeTrajectory1');
+                
+
+                let pc = document.createElement('div');
+                pc.style = `width: ${width}px; height: ${height}px; border:0px solid red; display: inline-block`;
+                parent.appendChild(pc);
+                // var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+                var chart = new google.visualization.ScatterChart(pc);
+                chart.draw(data, options);
+            }
+        }
+        window.addEventListener('load', e => {
+            let pitchInfo = <%-JSON.stringify(listData) %>;
+            pitchInfo.forEach(pitcherInfo => {
+                makePie(pitcherInfo, pitcherInfo["IsHome"], e => { console.log('makePie complete'); });
+                makeSpeedAvg(pitcherInfo, pitcherInfo["IsHome"], e => { console.log('makeSpeedAvg complete'); });
+                makeSpinAvg(pitcherInfo, pitcherInfo["IsHome"], e => { console.log('makeSpinAvg complete'); });
+                makeScatterCharts(pitcherInfo, pitcherInfo["IsHome"], e => { console.log('makeSpinAvg complete'); });
+            })
+        });
+    </script>
+</head>
+
+<body>
+    <div id="awayPitchType">
+        <h2>Away Team Pitchers's Pitch Type</h2>
+    </div>
+    <div id="homePitchType">
+        <h2>Home Team Pitchers's Pitch Type</h2>
+    </div> 
+
+    <div id="awayAvgSpeed" >
+        <h2>Away Team Pitchers's Avg Speed & Frequency</h2>
+    </div>
+     <div id="homeAvgSpeed">
+        <h2>Home Team Pitchers's Avg Speed & Frequency</h2>
+    </div> 
+    <!-- <div id="awayAvgSpin" style="width: 900px; height: 300px; display: inline-block">
+        <h2>Away Team Pitchers's Avg Spin</h2>
+    </div>  -->
+    <div id="homeAvgSpin">
+        <h2>Home Team Pitchers's Avg Spin</h2>
+    </div>
+    <div id="awayTrajectory1">
+        <h2>Away Pitchers's Avg trajectory1</h2>
+    </div>
+    <div id="homeTrajectory1">
+        <h2>Home Pitchers's Avg trajectory1</h2>
+    </div>
+</body>
+
+</html>
